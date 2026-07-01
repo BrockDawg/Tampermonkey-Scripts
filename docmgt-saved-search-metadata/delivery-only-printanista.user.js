@@ -13,52 +13,19 @@
 (function () {
     'use strict';
 
-    /*
-     * ==========================================================
-     * SETTINGS
-     * ==========================================================
-     */
-
-    /*
-     * Change this to the saved-search ID you want to target.
-     *
-     * Example URL:
-     * https://yourserver/V4/search/490721
-     *
-     * Saved-search ID:
-     * 490721
-     */
     const TARGET_SAVED_SEARCH_ID = '504060';
 
-    /*
-     * Heading displayed in the added local column.
-     */
     const COLUMN_TITLE = 'Local Metadata';
 
-    /*
-     * Show or hide individual metadata values.
-     */
     const SHOW_RECORD_ID = false;
     const SHOW_CREATED_DATE = true;
     const SHOW_CHANGED_DATE = false;
     const SHOW_WORKFLOW_ID = false;
 
-    /*
-     * ==========================================================
-     * INTERNAL STORAGE
-     * ==========================================================
-     */
-
     const capturedResponses = [];
 
     let renderTimer = null;
     let vueInspectionInProgress = false;
-
-    /*
-     * ==========================================================
-     * GENERAL HELPERS
-     * ==========================================================
-     */
 
     function normalize(value) {
         return String(value ?? '')
@@ -88,13 +55,6 @@
         return /\/V4API\/RecordSearch/i.test(String(url || ''));
     }
 
-    /*
-     * Converts DocMgt/.NET JSON dates such as:
-     *
-     * /Date(1771441715733)/
-     *
-     * into the browser's local date and time.
-     */
     function formatDocMgtDate(value) {
         if (!value) {
             return '';
@@ -118,9 +78,6 @@
             }
         }
 
-        /*
-         * Fall back to normal JavaScript date parsing.
-         */
         const parsedDate = new Date(stringValue);
 
         if (!Number.isNaN(parsedDate.getTime())) {
@@ -148,19 +105,10 @@
         });
     }
 
-    /*
-     * ==========================================================
-     * SAVED-SEARCH DETECTION
-     * ==========================================================
-     */
-
     function isTargetSearchActive() {
         const targetID = String(TARGET_SAVED_SEARCH_ID);
         const targetPath = `/v4/search/${targetID}`.toLowerCase();
 
-        /*
-         * Direct saved-search page.
-         */
         if (
             location.pathname
                 .toLowerCase()
@@ -169,12 +117,6 @@
             return true;
         }
 
-        /*
-         * Home > My Searches desktop tab.
-         *
-         * The active tab contains a nested link to:
-         * /V4/search/{SearchID}
-         */
         const targetLinks = Array.from(
             document.querySelectorAll(
                 `a[href*="/V4/search/${targetID}"], ` +
@@ -194,9 +136,6 @@
             return true;
         }
 
-        /*
-         * Home > My Searches mobile selector.
-         */
         const selects = Array.from(
             document.querySelectorAll('select')
         );
@@ -215,12 +154,6 @@
         return activeMobileSearch;
     }
 
-    /*
-     * ==========================================================
-     * RESPONSE CAPTURE
-     * ==========================================================
-     */
-
     function storeCapturedResponse(payload, sourceUrl) {
         if (!isObject(payload)) {
             return;
@@ -232,9 +165,6 @@
             capturedAt: Date.now()
         });
 
-        /*
-         * Prevent unlimited memory growth during long sessions.
-         */
         if (capturedResponses.length > 250) {
             capturedResponses.splice(
                 0,
@@ -268,15 +198,9 @@
                 sourceUrl
             );
         } catch {
-            /*
-             * The response was not valid JSON.
-             */
         }
     }
 
-    /*
-     * Capture fetch() responses.
-     */
     const originalFetch = window.fetch;
 
     if (typeof originalFetch === 'function') {
@@ -296,9 +220,6 @@
                         parseResponseText(text, sourceUrl);
                     })
                     .catch(() => {
-                        /*
-                         * Ignore response bodies that cannot be read.
-                         */
                     });
             } catch (error) {
                 console.debug(
@@ -311,9 +232,6 @@
         };
     }
 
-    /*
-     * Capture XMLHttpRequest responses.
-     */
     const originalXhrOpen =
         XMLHttpRequest.prototype.open;
 
@@ -364,12 +282,6 @@
         return originalXhrSend.apply(this, arguments);
     };
 
-    /*
-     * ==========================================================
-     * RECORD EXTRACTION
-     * ==========================================================
-     */
-
     function looksLikeRecord(record) {
         return Boolean(
             isObject(record) &&
@@ -411,21 +323,12 @@
             return records;
         }
 
-        /*
-         * Standard RecordSearch response.
-         */
         if (Array.isArray(payload.Results)) {
             payload.Results.forEach(addRecord);
         }
 
-        /*
-         * Sometimes an individual Results object gets captured.
-         */
         addRecord(payload);
 
-        /*
-         * Some responses may nest the result one level deeper.
-         */
         Object.values(payload).forEach(value => {
             if (!isObject(value)) {
                 return;
@@ -443,9 +346,6 @@
         const records = [];
         const seen = new Set();
 
-        /*
-         * Prefer the newest responses first.
-         */
         const responses = [...capturedResponses].reverse();
 
         responses.forEach(response => {
@@ -477,12 +377,6 @@
 
         return records;
     }
-
-    /*
-     * ==========================================================
-     * GRID HELPERS
-     * ==========================================================
-     */
 
     function getGridHeaderRow(grid) {
         return grid.querySelector(
@@ -617,16 +511,10 @@
 
             let score = 0;
 
-            /*
-             * Prefer records from the actual RecordSearch endpoint.
-             */
             if (isRecordSearchUrl(candidate.sourceUrl)) {
                 score += 50;
             }
 
-            /*
-             * Prefer complete record objects containing record metadata.
-             */
             if (
                 record.ID !== undefined &&
                 Array.isArray(record.Data)
@@ -642,9 +530,6 @@
                 score += 10;
             }
 
-            /*
-             * Account number is typically the strongest visible match.
-             */
             if (
                 accountEntry &&
                 recordText.includes(accountEntry.value)
@@ -652,9 +537,6 @@
                 score += 100;
             }
 
-            /*
-             * Customer name provides another strong match.
-             */
             if (
                 customerEntry &&
                 recordText.includes(customerEntry.value)
@@ -662,9 +544,6 @@
                 score += 50;
             }
 
-            /*
-             * Score the remaining visible values.
-             */
             rowEntries.forEach(entry => {
                 if (
                     entry.value.length >= 3 &&
@@ -680,19 +559,10 @@
             }
         }
 
-        /*
-         * Require a meaningful visible-data match.
-         */
         return bestScore >= 80
             ? bestMatch
             : null;
     }
-
-    /*
-     * ==========================================================
-     * METADATA EXTRACTION
-     * ==========================================================
-     */
 
     function extractRecordMetadata(candidate) {
         const record = candidate?.record;
@@ -768,12 +638,6 @@
         return metadata;
     }
 
-    /*
-     * ==========================================================
-     * COLUMN CREATION
-     * ==========================================================
-     */
-
     function ensureMetadataHeader(grid) {
         const headerRow = getGridHeaderRow(grid);
 
@@ -847,12 +711,6 @@
             paddingRight: '4px'
         });
 
-        /*
-         * Force black text so it stays readable when DocMgt highlights /
-         * selects the row (its selected-row style flips text to white).
-         * !important beats that override; children without their own color
-         * inherit this.
-         */
         cell.style.setProperty('color', '#000000', 'important');
 
         row.appendChild(cell);
@@ -880,16 +738,7 @@
         );
     }
 
-    /*
-     * ==========================================================
-     * MAIN RENDERING
-     * ==========================================================
-     */
-
     function renderMetadata() {
-        /*
-         * Do not alter any other saved search.
-         */
         if (!isTargetSearchActive()) {
             removeInjectedMetadata();
             return;
@@ -949,12 +798,6 @@
         });
     }
 
-    /*
-     * ==========================================================
-     * VUE STATE INSPECTION
-     * ==========================================================
-     */
-
     function inspectVueState() {
         if (
             vueInspectionInProgress ||
@@ -1001,12 +844,6 @@
         }
     }
 
-    /*
-     * ==========================================================
-     * RENDER SCHEDULING
-     * ==========================================================
-     */
-
     function scheduleRender(delay = 250) {
         clearTimeout(renderTimer);
 
@@ -1015,12 +852,6 @@
             renderMetadata();
         }, delay);
     }
-
-    /*
-     * ==========================================================
-     * PAGE OBSERVATION
-     * ==========================================================
-     */
 
     function startScript() {
         console.log(
@@ -1043,9 +874,6 @@
             ]
         });
 
-        /*
-         * Detect SPA navigation and saved-search selection.
-         */
         window.addEventListener(
             'popstate',
             () => scheduleRender(100)
@@ -1066,9 +894,6 @@
             () => {
                 scheduleRender(100);
 
-                /*
-                 * Allow time for the selected saved search to reload.
-                 */
                 setTimeout(
                     () => scheduleRender(100),
                     600
@@ -1083,12 +908,6 @@
 
         scheduleRender(100);
     }
-
-    /*
-     * ==========================================================
-     * CONSOLE TROUBLESHOOTING HELPERS
-     * ==========================================================
-     */
 
     window.DM_METADATA = {
         targetSavedSearchID:
