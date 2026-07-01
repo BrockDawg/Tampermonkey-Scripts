@@ -12,9 +12,14 @@ Tampermonkey → **Utilities → Check for userscript updates**).
 
 ## Scripts
 
-| Script | Description | Install |
-|--------|-------------|---------|
-| **DocMgt Saved Search Metadata** | Displays record metadata for one DocMgt saved search | [Install](https://raw.githubusercontent.com/BrockDawg/Tampermonkey-Scripts/main/docmgt-saved-search-metadata.user.js) |
+### DocMgt Saved Search Metadata
+
+Displays record metadata for a single DocMgt saved search. One script per saved
+search, kept under [`docmgt-saved-search-metadata/`](docmgt-saved-search-metadata/).
+
+| Saved search | Install |
+|--------------|---------|
+| **Delivery Only Printanista** (ID `504060`) | [Install](https://raw.githubusercontent.com/BrockDawg/Tampermonkey-Scripts/main/docmgt-saved-search-metadata/delivery-only-printanista.user.js) |
 
 ## Installing
 
