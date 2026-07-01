@@ -4,8 +4,8 @@
 // @version      2.1.0
 // @description  Displays record metadata for one DocMgt saved search
 // @match        https://eakes.docmgt.cloud/V4/*
-// @updateURL    https://raw.githubusercontent.com/BrockDawg/tampermonkey-scripts/main/docmgt-record-metadata.user.js
-// @downloadURL  https://raw.githubusercontent.com/BrockDawg/tampermonkey-scripts/main/docmgt-record-metadata.user.js
+// @updateURL    https://raw.githubusercontent.com/BrockDawg/scriptmonkey/main/docmgt-record-metadata.user.js
+// @downloadURL  https://raw.githubusercontent.com/BrockDawg/scriptmonkey/main/docmgt-record-metadata.user.js
 // @run-at       document-start
 // @grant        none
 // ==/UserScript==
