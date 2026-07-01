@@ -14,7 +14,7 @@ Tampermonkey → **Utilities → Check for userscript updates**).
 
 | Script | Description | Install |
 |--------|-------------|---------|
-| **DocMgt Record Metadata** | Displays record metadata for one DocMgt saved search | [Install](https://raw.githubusercontent.com/BrockDawg/scriptmonkey/main/docmgt-record-metadata.user.js) |
+| **DocMgt Record Metadata** | Displays record metadata for one DocMgt saved search | [Install](https://raw.githubusercontent.com/BrockDawg/Tampermonkey-Scripts/main/docmgt-record-metadata.user.js) |
 
 ## Installing
 
