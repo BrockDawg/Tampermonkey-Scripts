@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DocMgt Saved Search Metadata - Delivery Only Printanista
 // @namespace    eakes-docmgt
-// @version      2.1.1
+// @version      2.1.2
 // @description  Displays record metadata for one DocMgt saved search
 // @match        https://eakes.docmgt.cloud/V4/*
 // @updateURL    https://raw.githubusercontent.com/BrockDawg/Tampermonkey-Scripts/main/docmgt-saved-search-metadata/delivery-only-printanista.user.js
@@ -846,6 +846,15 @@
             paddingLeft: '4px',
             paddingRight: '4px'
         });
+
+        /*
+         * Force black text so it stays readable when DocMgt highlights /
+         * selects the row (its selected-row style flips text to white).
+         * !important beats that override; children without their own color
+         * inherit this.
+         */
+        cell.style.setProperty('color', '#000000', 'important');
+
         row.appendChild(cell);
 
         return cell;
