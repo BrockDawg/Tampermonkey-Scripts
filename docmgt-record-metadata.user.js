@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         DocMgt Record Metadata - Delivery Only Printanista
+// @name         DocMgt Saved Search Metadata - Delivery Only Printanista
 // @namespace    eakes-docmgt
-// @version      2.1.0
+// @version      2.1.1
 // @description  Displays record metadata for one DocMgt saved search
 // @match        https://eakes.docmgt.cloud/V4/*
 // @updateURL    https://raw.githubusercontent.com/BrockDawg/Tampermonkey-Scripts/main/docmgt-record-metadata.user.js
